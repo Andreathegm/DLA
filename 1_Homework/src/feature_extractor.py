@@ -52,7 +52,7 @@ def test_extract_features(model,dataloader):
     return features,labels
 
 
-def save_feats(model_name,batch_size=16,transform_string=None):
+def save_feats(model_name,batch_size=8,transform_string=None):
     model_name = model_name
     model = get_model(model_name, weights='DEFAULT')
     dl_train = get_train_GTSRB_dl("dataset/",batch_size=batch_size,transform_string=transform_string)
