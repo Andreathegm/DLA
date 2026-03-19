@@ -1,12 +1,13 @@
 from torchvision.datasets import GTSRB
 from torch.utils.data import DataLoader
 from torchvision.models import list_models, get_model
-
+import os
 import torchvision.transforms.v2 as T
 
 
 mean = [0.485, 0.456, 0.406]
 std=[0.229, 0.224, 0.225]
+worker = min(8, os.cpu_count() // 2)
 
 
 def get_GTSRB_ds(folder,split,transform,download=True):
@@ -21,10 +22,23 @@ def get_test_GTSRB_ds(folder,transform_string=None):
     return get_GTSRB_ds(folder,"test",trasform)
 
 def get_train_GTSRB_dl(folder,batch_size,transform_string=None):
-    return DataLoader(dataset=get_train_GTSRB_ds(folder,transform_string),batch_size=batch_size,shuffle=False,num_workers=2)
+    return DataLoader(dataset=get_train_GTSRB_ds(folder,transform_string),
+                      batch_size=batch_size,
+                      shuffle=False,
+                      num_workers=worker,
+                      pin_memory=True,   
+                      persistent_workers=True )
 
 def get_test_GTSRB_dl(folder,batch_size,transform_string=None):
-    return DataLoader(dataset=get_test_GTSRB_ds(folder,transform_string),batch_size=batch_size,shuffle=False,num_workers=2)
+
+    return DataLoader(
+                      dataset=get_test_GTSRB_ds(folder,transform_string),
+                      batch_size=batch_size,
+                      shuffle=False,
+                      num_workers=worker,
+                      pin_memory=True,   
+                      persistent_workers=True 
+                      )
 
 def get_transform(trasform_str):
     match trasform_str:
