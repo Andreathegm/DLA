@@ -3,28 +3,23 @@ from src.retrieval import retrieval_evaluation
 from src.feature_extractor import save_feats
 import os
 from src.utils import list_models_feats
+from src.classifier import nearest_mean_classifier
+import yaml
 
 model_paths = []
 
 def main():
-    model_names = [
-                # 'efficientnet_b0',    # baseline moderna leggera
-                # 'efficientnet_v2_s',  # v2 più efficiente      # CNN moderna stile transformer
-                # 'resnet50',           # classico di riferimento
-                # 'swin_t',
-                #'vit_b_16', 
-                # resnet18    
 
-                    ]
-    
-    model_transform = {name : "vit" for name in model_names}
-    print(model_transform)
-    for name in model_names:
+    config_path = "config/models.yaml"
+    config = load_yaml(config_path)
+
+    for name in config:
         model_feats = (f"models/{name}_gallery_feats.pt",f"models/{name}_test_feats.pt")
+
         if model_feats not in list_models_feats():
-         
+            return
             print(f"Downloading and saving feats... from {name}")
-            save_feats(model_name=name,transform_string = model_transform[name])
+            save_feats(model_name=name,transform_string = config[name])
             model_paths.append(model_feats)
         else:
             model_paths.append(model_feats)
@@ -32,6 +27,19 @@ def main():
             print(model_paths)
         
 
+    if False:
+        calculate_mAP(model_paths= model_paths,config=config)
+    near_mean_classify(model_paths=model_paths,config=config)
+    
+
+
+def load_yaml(config_path):
+    with open(config_path,'r') as f:
+        config = yaml.safe_load(f)
+    return config
+
+def calculate_mAP(model_paths : tuple ,config : dict):
+    model_names = list(config.keys())
     for i,path in enumerate(model_paths):
         gallery_feats,gallery_labels = torch.load(path[0])
         test_feats,test_labels = torch.load(path[1])
@@ -48,9 +56,31 @@ def main():
             },
             f"results/{model_names[i]}.pt"
         )
-    
+def near_mean_classify(model_paths : tuple,config):
+
+    model_names = list(config.keys())
+    for i,path in enumerate(model_paths):
+        gallery_feats,gallery_labels = torch.load(path[0])
+        test_feats,test_labels = torch.load(path[1])
+        acc,acc_per_class, _ = nearest_mean_classifier(gallery_feats=gallery_feats,
+                                                       gallery_labels=gallery_labels,
+                                                       test_feats=test_feats,
+                                                       test_labels=test_labels)
+        
+        print(f"Accuracy for model{path} : \n{acc}")
+        print(f"Accuracy per class : {acc_per_class}")
+
+        os.makedirs("classify", exist_ok=True)
+        torch.save(
+            {
+                "acc" : acc,
+                "acc_per_class" : acc_per_class,
+            },f"classify/{model_names[i]}.pt"
+        )
 
 
-    pass
+
+
+
 if __name__ == "__main__":
     main()
