@@ -17,7 +17,6 @@ def main():
         model_feats = (f"models/{name}_gallery_feats.pt",f"models/{name}_test_feats.pt")
 
         if model_feats not in list_models_feats():
-            return
             print(f"Downloading and saving feats... from {name}")
             save_feats(model_name=name,transform_string = config[name])
             model_paths.append(model_feats)
@@ -27,8 +26,7 @@ def main():
             print(model_paths)
         
 
-    if False:
-        calculate_mAP(model_paths= model_paths,config=config)
+    calculate_mAP(model_paths= model_paths,config=config)
     near_mean_classify(model_paths=model_paths,config=config)
     
 

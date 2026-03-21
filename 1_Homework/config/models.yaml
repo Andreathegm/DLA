@@ -1,6 +1,6 @@
 efficientnet_b0 : None 
 efficientnet_v2_s: None
 resnet50 : None       
-swin_t: NOne
+swin_t: None
 vit_b_16 : vit
 resnet18 : None
