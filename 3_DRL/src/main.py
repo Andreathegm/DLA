@@ -5,9 +5,8 @@ import matplotlib.pyplot as plt
 from gymnasium.wrappers import RecordVideo
 from policynet import PolicyNet
 from reinforce import reinforce
-
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
+from device import device
+from evaluate import record_video_evaluation
 
 seed = 1234
 torch.manual_seed(seed)
@@ -18,27 +17,15 @@ env.reset(seed=seed)
 
 policy = PolicyNet(env).to(device)
 
-
-rewards = reinforce(policy = policy,env = env,num_episodes=1000)
+running_rewards,eval_rewards,eval_lenghts = reinforce(policy=policy, env=env, num_episodes=1000)
 torch.save(policy.state_dict(), "weights/policy_final.pt")
 
-plt.plot(rewards)
+plt.plot(running_rewards)
 plt.savefig("plots/running_reward_training_curve.png")
 plt.close()
 
-
 env.close()
 
+# ── Valutazione finale con video ─────────────────────────────────────────────
 policy.eval()
-env_video = gym.make("CartPole-v1", render_mode="rgb_array")
-env_video = RecordVideo(env_video, video_folder="./videos", name_prefix="final")
-obs, info = env_video.reset()
-done = False
-
-while not done:
-    obs_tensor = torch.tensor(obs, dtype=torch.float32)
-    action = policy(obs_tensor).argmax().item()
-    obs, reward, terminated, truncated, info = env_video.step(action)
-    done = terminated or truncated
-
-env_video.close()
+record_video_evaluation(policy = policy)
