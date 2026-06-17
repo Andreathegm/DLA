@@ -1,1 +1,4 @@
 dataset/
+*plots/
+*weights/
+*__pycache__
