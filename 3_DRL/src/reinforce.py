@@ -5,9 +5,9 @@ from src.utils import run_episode, compute_returns , evaluate_policy
 _ = pygame.init()
 
 
-def reinforce(policy, env, baseline , lr=1e-2 ,env_render=None, gamma=0.99, num_episodes=10, optimizer=None , N = 50 , M = 20 , w_eval_path = "weights/eval"):
+def reinforce(policy, env, baseline , lr=1e-2 ,env_render=None, gamma=0.99, num_episodes=10, optimizer=None , N = 50 , M = 20 , w_eval_path = "weights/eval",loss_op = "mean"):
 
-    opt = optimizer if optimizer else torch.optim.Adam(policy.parameters(), lr=1e-2)
+    opt = optimizer if optimizer else torch.optim.Adam(policy.parameters(), lr=lr)
 
     ## Metrics
     running_rewards = [0.0]
@@ -32,7 +32,14 @@ def reinforce(policy, env, baseline , lr=1e-2 ,env_render=None, gamma=0.99, num_
         ## the mean of the return is indipendent of the state
 
         opt.zero_grad()
-        loss = (-log_probs * returns).mean()
+
+        if loss_op == "mean":
+            print("Using mean as loss")
+            loss = -(log_probs * returns).mean()
+        elif loss_op == "sum":
+            print("Using mean as loss")
+            loss = -(log_probs * returns).sum()
+        
         loss.backward()
         opt.step()
 
@@ -70,10 +77,7 @@ def returns_with_baseline(returns, baseline=None, epsilon=1e-8):
         return (returns - b) / std
 
     if callable(baseline):
-
-        b = baseline(returns)
-        std = returns.std() + epsilon
-        return (returns - b) / std
+        pass
 
     # fallback: valore numerico fisso
     return returns - baseline
