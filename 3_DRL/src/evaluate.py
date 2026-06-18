@@ -1,10 +1,11 @@
 import torch
-from device import device
-from gymnasium.wrappers import RecordVideo
 import gymnasium as gym
-from policynet import PolicyNet
+from gymnasium.wrappers import RecordVideo
+from src.policynet import PolicyNet
+from src.device import device
 
-EVAL = True 
+
+EVAL = False 
 
 
 def record_video_evaluation(policy , env_name = "CartPole-v1",video_folder = "./videos",name_prefix = "final"):
@@ -16,11 +17,6 @@ def record_video_evaluation(policy , env_name = "CartPole-v1",video_folder = "./
 
     while not done:
         obs_tensor = torch.tensor(obs, dtype=torch.float32).to(device)
-        # ── Perché .to(device) QUI è corretto ───────────────────────────────────
-        # Stesso motivo di run_episode: obs viene da gym (numpy, CPU-side) e deve
-        # essere portato su device prima di passarlo alla policy. Questo loop di
-        # valutazione è fuori da run_episode quindi lo facciamo esplicitamente.
-        # ────────────────────────────────────────────────────────────────────────
         action = policy(obs_tensor).argmax().item()
         obs, reward, terminated, truncated, info = env_video.step(action)
         done = terminated or truncated

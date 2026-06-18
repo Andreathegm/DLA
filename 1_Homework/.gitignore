@@ -3,5 +3,6 @@
 *dataset/
 *classify/
 *plots/
+*/numeric
 .python-version
 .venv
