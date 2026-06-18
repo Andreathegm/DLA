@@ -5,7 +5,7 @@ from src.utils import run_episode, compute_returns , evaluate_policy
 _ = pygame.init()
 
 
-def reinforce(policy, env, env_render=None, gamma=0.99, num_episodes=10, optimizer=None , N = 50 , M = 20 , w_eval_path = "weights/eval" ):
+def reinforce(policy, env, baseline , lr=1e-2 ,env_render=None, gamma=0.99, num_episodes=10, optimizer=None , N = 50 , M = 20 , w_eval_path = "weights/eval"):
 
     opt = optimizer if optimizer else torch.optim.Adam(policy.parameters(), lr=1e-2)
 
@@ -24,7 +24,12 @@ def reinforce(policy, env, env_render=None, gamma=0.99, num_episodes=10, optimiz
         running_rewards.append(0.05 * returns[0].item() + 0.95 * running_rewards[-1])
 
         # standardization
-        returns = (returns - returns.mean()) / (returns.std() + 1e-8)
+        #returns = (returns - returns.mean()) / (returns.std() + 1e-8)
+        returns = returns_with_baseline(returns,baseline)
+
+        ## its equal to write
+        ## 1/sigma*    (returns - returns.mean()) isolating the difference , also
+        ## the mean of the return is indipendent of the state
 
         opt.zero_grad()
         loss = (-log_probs * returns).mean()
@@ -53,3 +58,22 @@ def reinforce(policy, env, env_render=None, gamma=0.99, num_episodes=10, optimiz
 
     policy.eval()
     return running_rewards,eval_avg_rewards,eval_avg_lengths
+
+def returns_with_baseline(returns, baseline=None, epsilon=1e-8):
+
+    if baseline is None:
+        return returns
+
+    if baseline == "mean":
+        b = returns.mean()
+        std = returns.std() + epsilon
+        return (returns - b) / std
+
+    if callable(baseline):
+
+        b = baseline(returns)
+        std = returns.std() + epsilon
+        return (returns - b) / std
+
+    # fallback: valore numerico fisso
+    return returns - baseline
