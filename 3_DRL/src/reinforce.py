@@ -34,10 +34,8 @@ def reinforce(policy, env, baseline , lr=1e-2 ,env_render=None, gamma=0.99, num_
         opt.zero_grad()
 
         if loss_op == "mean":
-            print("Using mean as loss")
             loss = -(log_probs * returns).mean()
         elif loss_op == "sum":
-            print("Using mean as loss")
             loss = -(log_probs * returns).sum()
         
         loss.backward()

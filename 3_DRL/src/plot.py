@@ -21,3 +21,35 @@ def plot_results(*triples, save_dir="plots", plot_grid=False, show=False, save=T
             display(fig)
 
         plt.close(fig)
+
+
+def plot_combined_results(*methods, save_dir="plots",
+                          plot_grid=False, show=False, save=True):
+
+    os.makedirs(save_dir, exist_ok=True)
+
+    # Numero di grafici = numero di triple per metodo
+    num_plots = len(methods[0])
+
+    for plot_idx in range(num_plots):
+        fig, ax = plt.subplots(figsize=(6, 4))
+
+        for method in methods:
+            x, y, xlabel, ylabel, label = method[plot_idx]
+            ax.plot(x, y, label=label)
+
+        ax.set_xlabel(xlabel)
+        ax.set_ylabel(ylabel)
+        ax.grid(plot_grid)
+        ax.legend()
+
+        filename = f"combined_{xlabel}_{ylabel}.png".replace(" ", "_")
+        filepath = os.path.join(save_dir, filename)
+
+        if save:
+            fig.savefig(filepath, dpi=200, bbox_inches="tight")
+
+        if show:
+            display(fig)
+
+        plt.close(fig)
