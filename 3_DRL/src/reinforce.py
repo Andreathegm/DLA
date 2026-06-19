@@ -1,13 +1,15 @@
 import torch
 import pygame
 from src.utils import run_episode, compute_returns , evaluate_policy
+import torch.nn.functional as F
 
 _ = pygame.init()
 
 
-def reinforce(policy, env, baseline , lr=1e-2 ,env_render=None, gamma=0.99, num_episodes=10, optimizer=None , N = 50 , M = 20 , w_eval_path = "weights/eval",loss_op = "mean"):
+def reinforce(policy, env, baseline,lr_vnet,lr=1e-2 ,env_render=None, gamma=0.99, num_episodes=10, optimizer=None ,optimizer_vnet = None, N = 50 , M = 20 , w_eval_path = "weights/eval",loss_op = "mean"):
 
     opt = optimizer if optimizer else torch.optim.Adam(policy.parameters(), lr=lr)
+    opt_value = optimizer_vnet if optimizer_vnet else torch.optim.Adam(baseline.parameters(),lr = lr_vnet)
 
     ## Metrics
     running_rewards = [0.0]
@@ -16,6 +18,10 @@ def reinforce(policy, env, baseline , lr=1e-2 ,env_render=None, gamma=0.99, num_
     eval_best_reward = 0.0
 
     policy.train()
+
+    if callable(baseline) :
+        baseline.train()
+    
     for episode in range(num_episodes):
         (observations, actions, log_probs, rewards) = run_episode(env, policy)
 
@@ -25,7 +31,7 @@ def reinforce(policy, env, baseline , lr=1e-2 ,env_render=None, gamma=0.99, num_
 
         # standardization
         #returns = (returns - returns.mean()) / (returns.std() + 1e-8)
-        returns = returns_with_baseline(returns,baseline)
+        returns = returns_with_baseline(obs = observations,returns = returns,baseline=baseline,opt_vnet=opt_value)
 
         ## its equal to write
         ## 1/sigma*    (returns - returns.mean()) isolating the difference , also
@@ -64,7 +70,7 @@ def reinforce(policy, env, baseline , lr=1e-2 ,env_render=None, gamma=0.99, num_
     policy.eval()
     return running_rewards,eval_avg_rewards,eval_avg_lengths
 
-def returns_with_baseline(returns, baseline=None, epsilon=1e-8):
+def returns_with_baseline(returns, baseline=None, epsilon=1e-8,obs = None,opt_vnet = None):
 
     if baseline is None:
         return returns
@@ -74,8 +80,25 @@ def returns_with_baseline(returns, baseline=None, epsilon=1e-8):
         std = returns.std() + epsilon
         return (returns - b) / std
 
-    if callable(baseline):
-        pass
+    if callable(baseline) and obs is not None and opt_vnet is not None:
+        return learn_baseline(returns=returns,obs=obs, baseline=baseline, opt_vnet=opt_vnet)
 
-    # fallback: valore numerico fisso
     return returns - baseline
+
+def learn_baseline(obs,returns,baseline,opt_vnet):
+
+
+    obs_tensor = torch.tensor(torch.stack(obs), dtype=torch.float32)
+            
+    state_values = baseline(obs_tensor).squeeze() 
+
+    advantages = returns - state_values.detach()
+
+    value_loss = F.mse_loss(state_values, returns)
+
+
+    opt_vnet.zero_grad()
+    value_loss.backward()
+    opt_vnet.step()
+
+    return advantages

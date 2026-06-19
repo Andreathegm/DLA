@@ -6,7 +6,7 @@ from src.evaluate import record_video_evaluation
 
 
 
-def train( env ,policy,lr,num_episodes,seed,baseline,w_path,v_path,n_path,record_final_video = True,loss_op = "mean"):
+def train( env ,policy,lr,lr_vnet,num_episodes,seed,baseline,w_path,v_path,n_path,record_final_video = True,loss_op = "mean"):
 
     print(f"started trainig with lr = {lr}")
     w_eval_path = f"{w_path}/eval"
@@ -24,7 +24,7 @@ def train( env ,policy,lr,num_episodes,seed,baseline,w_path,v_path,n_path,record
         print("No baseline applied")
 
 
-    running_rewards,eval_rewards,eval_lenghts = reinforce(policy=policy,lr = lr , loss_op = loss_op ,baseline = baseline, env=env, num_episodes=num_episodes,w_eval_path = w_eval_path)
+    running_rewards,eval_rewards,eval_lenghts = reinforce(policy=policy,lr = lr ,lr_vnet= lr_vnet, loss_op = loss_op ,baseline = baseline, env=env, num_episodes=num_episodes,w_eval_path = w_eval_path)
 
     env.close()
 
