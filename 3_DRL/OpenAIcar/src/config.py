@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-import os
+import argparse,time    
 
 @dataclass
 class EnvConfig:
@@ -27,11 +27,44 @@ class PPOConfig:
     max_grad_norm: float = 0.5     ## max L2 norm , so the gradient are scaled down 
     target_kl: float = None        ## KL divergence      
     norm_adv: bool = True          ## Toggles advantage normalization at batch level
+    checkpoint_freq: int = 50
 
     @property
     def batch_size(self) -> int:
-        return int(4 * self.num_steps) 
+        return int(self.num_envs * self.num_steps) 
 
     @property
     def minibatch_size(self) -> int:
         return int(self.batch_size // self.num_minibatches)
+
+def parse_args():
+    parser = argparse.ArgumentParser(description="PPO Trainer for OpenAI Car")
+    
+    parser.add_argument("--gym-id", type=str, default="CarRacing-v3")
+    parser.add_argument("--num-envs", type=int, default=8)
+    parser.add_argument("--seed", type=int, default=1)
+    parser.add_argument("--total-timesteps", type=int, default=1000000)
+    parser.add_argument("--learning-rate", type=float, default=2.5e-4)
+    parser.add_argument("--num-steps", type=int, default=128)
+    parser.add_argument("--checkpoint-freq", type=int, default=50)
+    
+    args = parser.parse_args()
+    
+    run_name = f"{args.gym_id}__seed_{args.seed}__{int(time.time())}"
+    
+    env_cfg = EnvConfig(
+        gym_id=args.gym_id,
+        num_envs=args.num_envs,
+        seed=args.seed,
+        run_name=run_name
+    )
+    
+    ppo_cfg = PPOConfig(
+        num_envs = args.num_envs,
+        total_timesteps=args.total_timesteps,
+        learning_rate=args.learning_rate,
+        num_steps=args.num_steps,
+        checkpoint_freq=args.checkpoint_freq
+    )
+    
+    return env_cfg, ppo_cfg

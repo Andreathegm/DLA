@@ -49,10 +49,14 @@ class CNNDiscreteAgent(nn.Module):
     def get_value(self, x):
                                                      ##TODO x should be normalized before entering here because 
                                                      ##  neural networks expect inputs roughly in the $[-1, 1]$ or $[0, 1]$ range to keep activations stable.
+        x = x.float()/255
         hidden = self.network(x)
         return self.critic(hidden)
 
-    def get_action_and_value(self, x, action=None):   ## TODO : why passing the action in the first place
+    def get_action_and_value(self, x, action=None):  ## TODO : why passing the action in the first place
+        
+        x = x.float()/255                            ## We convert to float because in this way even if the tensor will contain int values we convert them before dividing them
+
 
         ## first we get our features
         hidden = self.network(x)
