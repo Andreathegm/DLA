@@ -3,11 +3,11 @@ import os
 
 @dataclass
 class EnvConfig:
-    gym_id: str
+    gym_id: str = "CarRacing-v3"
     num_envs: int = 4              ## vectorized enviroments - every env. should be i.i.d . Also done for reducing correlation btw sequential step
     seed: int = 1
     capture_video: bool = False
-    run_name: str
+    run_name: str = "first_run"
 
 @dataclass
 class PPOConfig:
