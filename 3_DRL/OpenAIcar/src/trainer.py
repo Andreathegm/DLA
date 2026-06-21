@@ -116,6 +116,8 @@ class PPOTrainer:
                     action, logprob, _, value = self.agent.get_action_and_value(next_obs)
                 
                 next_obs_numpy, reward, terminated, truncated, info = self.envs.step(action.cpu().numpy())
+                ## maybe put a flag here.
+                reward = np.clip(reward,max=1.0)
                 done = np.logical_or(terminated,truncated)
                 
                 self.buffer.add(

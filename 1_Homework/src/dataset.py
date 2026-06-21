@@ -1,6 +1,5 @@
 from torchvision.datasets import GTSRB
 from torch.utils.data import DataLoader
-from torchvision.models import list_models, get_model
 import os
 import torchvision.transforms.v2 as T
 
