@@ -129,6 +129,7 @@ class PPOTrainer:
                 next_done = torch.Tensor(done).to(self.device)
 
                 if "episode" in info and "_episode" in info:
+                    print(info)
                     mask = info["_episode"]
                     returns = info["episode"]["r"]
                     lengths = info["episode"]["l"]

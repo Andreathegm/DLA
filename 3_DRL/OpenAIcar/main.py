@@ -15,11 +15,12 @@ from src.env_wrapper import SmoothDrivingWrapper
 
 def make_env(gym_id, seed, idx, capture_video, run_name):
     def thunk():
-        env = gym.make(gym_id, continuous=False) 
+        if capture_video:
+            env = gym.make(gym_id, continuous=False)
+        else:
+            env = gym.make(gym_id, continuous=False, render_mode="rgb_array")
 
         env = SmoothDrivingWrapper(env, max_consecutive_gas=15)
-
-        env = gym.wrappers.RecordEpisodeStatistics(env)
 
         env = GrayscaleObservation(env, keep_dim=False)
         env = ResizeObservation(env, (84, 84)) 
@@ -29,6 +30,9 @@ def make_env(gym_id, seed, idx, capture_video, run_name):
 
         if capture_video and idx == 0:
             env = gym.wrappers.RecordVideo(env, f"videos/{run_name}")
+            env = gym.wrappers.RecordEpisodeStatistics(env)
+        else:
+            env = gym.wrappers.RecordEpisodeStatistics(env)
 
         return env
     return thunk
