@@ -5,30 +5,28 @@ import random
 import numpy as np
 import os
 import sys
-
 from gymnasium.wrappers import GrayscaleObservation,ResizeObservation,FrameStackObservation
 from torch.utils.tensorboard import SummaryWriter
 from src.config import parse_args
 from src.buffer import RolloutBuffer
 from src.models import CNNDiscreteAgent
 from src.trainer import PPOTrainer
-
+from src.env_wrapper import SmoothDrivingWrapper
 
 def make_env(gym_id, seed, idx, capture_video, run_name):
     def thunk():
-        
         env = gym.make(gym_id, continuous=False) 
-        obs,info = env.reset(seed=seed)
-        print("Observation shape :",obs.shape,info)                                  
-        env.action_space.seed(seed)
-        env.observation_space.seed(seed)
+
+        env = SmoothDrivingWrapper(env, max_consecutive_gas=15)
 
         env = gym.wrappers.RecordEpisodeStatistics(env)
+
         env = GrayscaleObservation(env, keep_dim=False)
         env = ResizeObservation(env, (84, 84)) 
         env = FrameStackObservation(env, 4)
         obs,info = env.reset(seed=seed)
         print("Observation shape :",obs.shape,info)
+
         if capture_video and idx == 0:
             env = gym.wrappers.RecordVideo(env, f"videos/{run_name}")
 

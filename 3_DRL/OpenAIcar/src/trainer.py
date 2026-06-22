@@ -117,7 +117,7 @@ class PPOTrainer:
                 
                 next_obs_numpy, reward, terminated, truncated, info = self.envs.step(action.cpu().numpy())
                 ## maybe put a flag here.
-                reward = np.clip(reward,max=1.0)
+                #reward = np.clip(reward,max=1.0)
                 done = np.logical_or(terminated,truncated)
                 
                 self.buffer.add(
