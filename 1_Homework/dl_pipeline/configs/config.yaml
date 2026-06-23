@@ -1,0 +1,17 @@
+# ---------------------------------------------------------------
+# Root config — Hydra composes this with the sub-configs below.
+# Override any value from the command line, e.g.:
+#   python train.py trainer.epochs=30 optimizer=sgd optimizer.lr=0.01
+# ---------------------------------------------------------------
+
+defaults:
+  - optimizer: adam
+  - loss: cross_entropy
+  - logger: wandb
+  - _self_          # values in THIS file take precedence over sub-configs
+
+trainer:
+  epochs: 40
+  device: cuda               # falls back to cpu automatically in CustomTrainer
+  log_every_n_steps: 50
+  checkpoint_dir: checkpoints

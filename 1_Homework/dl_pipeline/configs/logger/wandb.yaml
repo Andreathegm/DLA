@@ -1,0 +1,23 @@
+project: dla-lab1-pipeline
+
+# null → wandb auto-generates a random memorable name (recommended).
+# Set to a string to fix the run name, e.g. "resnet18-adam-lr1e3"
+run_name: null
+
+tags: []      # e.g. [resnet18, cifar10, sweep]
+notes: ""     # free-text description that appears on the wandb run page
+
+# online  → stream to wandb.ai in real time
+# offline → save locally, sync later with `wandb sync`
+# disabled → NullLogger is used instead (no wandb process at all)
+mode: online
+
+# Set to true to log gradient histograms to the dashboard.
+# Useful for diagnosing vanishing/exploding gradients.
+watch_model: false
+watch_log: gradients    # gradients | parameters | all
+watch_log_freq: 100
+
+# Upload each checkpoint .pt as a wandb Artifact.
+# Lets you restore any run from the dashboard.
+log_checkpoints: false

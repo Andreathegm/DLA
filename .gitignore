@@ -5,3 +5,5 @@ dataset/
 *videos*/
 */numeric
 *runs
+*wandb
+*distill-bert*
