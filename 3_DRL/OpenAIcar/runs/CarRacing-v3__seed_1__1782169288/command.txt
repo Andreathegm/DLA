@@ -1,0 +1,1 @@
+python main.py --gym-id CarRacing-v3 --num-envs 8 --num-steps 512 --total-timesteps 6000000 --checkpoint-freq 50
