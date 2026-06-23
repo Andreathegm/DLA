@@ -2,7 +2,7 @@ dataset/
 *plots/
 *weights/
 *__pycache__
-*videos*/
+*videos/
 */numeric
 *runs
 *wandb
