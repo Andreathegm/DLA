@@ -44,7 +44,6 @@ class CustomTrainer:
             epoch_loss = 0.0
             total_samples = 0
             
-            # Using tqdm for an elegant progress bar
             progress_bar = tqdm(self.train_loader, desc=f"Epoch [{epoch+1}/{self.epochs}]")
             
             for x, y in progress_bar:
@@ -70,7 +69,7 @@ class CustomTrainer:
                 progress_bar.set_postfix({"loss": f"{loss.item():.4f}"})
 
             avg_loss = epoch_loss / total_samples
-            self.logger.log({"train/epoch_loss": avg_loss, "epoch": epoch}, step=self.global_step)
+            self.logger.log({"train/epoch_loss": avg_loss}, step=epoch)
             print(f"Epoch [{epoch+1}/{self.epochs}] | Train Loss: {avg_loss:.4f}")
             
             val_loss = self.evaluate_val()
