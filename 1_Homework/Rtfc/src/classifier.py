@@ -6,7 +6,7 @@ def nearest_mean_classifier(gallery_feats, gallery_labels, test_feats, test_labe
     gallery_feats = F.normalize(gallery_feats, p=2, dim=1) # (N,D)
     test_feats    = F.normalize(test_feats,    p=2, dim=1) # (M,D)
 
-    # stach evey class mean vector in a new tensor
+    # stack evey class mean vector in a new tensor
     means = torch.stack([
         gallery_feats[gallery_labels == c].mean(dim=0)
         for c in range(num_classes)
