@@ -1,81 +1,59 @@
-# Deep Learning Applications — Laboratory Sessions
+# Deep Learning Applications - Labs
 
 Laboratory submissions for the **Deep Learning Applications** course at the **University of Florence (UniFI)**.
 
-The course covers deep learning methods and their practical applications. These labs put into practice the concepts and tools introduced during lectures.
+The course covers deep learning methods and their practical applications.
 
----
 
 ## Structure
 
-The repository contains four laboratory folders. Each lab is self-contained with its own code, configuration, and results.
+The repository contains three laboratory folders. Each homework is self-contained.  
+All relevant information are conteined in the notebooks (.ipynb)
 
-```
-DLA/
-├── README.md              
-├── pyproject.toml          ← all dependencies managed with uv
-├── uv.lock
-├── 1-Homework/
-│   ├── README.md           ← lab description,main results
-│   ├── analysis.ipynb      ← final results, plots, and commentary
-│   ├── main.py
-│   └── src/
-├── 2-Homework/
-│   ├── README.md
-│   ├── analysis.ipynb
-│   └── ...
-├── 3-Homework/
-│   ├── README.md
-│   ├── analysis.ipynb
-│   └── ...
-└── 4-Homework/
-    ├── README.md
-    ├── analysis.ipynb
-    └── ...
-```
-
-Each `README.md` describes the specific lab: task, implementation choices, and a summary of results. Each `analysis.ipynb` contains the full result analysis with plots and comments.
+<pre style="font-family: monospace; font-size: 14px; line-height: 1.2;">
+<span style="color:#4285f4"><b>DLA/</b></span>
+├── README.md
+├── <span style="color:#4285f4"><b>1-Homework/</b></span>
+│   ├── DLA-Lab1.ipynb
+│   ├── pyproject.toml
+│   └── uv.lock
+│   
+├── <span style="color:#4285f4"><b>2-Homework/</b></span>
+│   ├── DLA-Lab2.ipynb
+│   ├── pyproject.toml
+│   └── uv.lock
+│   
+└── <span style="color:#4285f4"><b>3-DRL/</b></span>
+    ├── DLA-Lab3-DRL.ipynb
+    ├── pyproject.toml
+    └── uv.lock
+</pre>
 
 ---
 
-## Labs
+## List of choosen exercizes 
 
-| Lab | Topic | 
-|-----|-------|
-| [Lab 1](./lab1/README.md) | Retrieval as Training-free Classification on GTSRB |  |
-| Lab 2 | TBD | 
-| Lab 3 | TBD |
-| Lab 4 | TBD |
+| Lab   | Assignment   |
+| ---------- | ------------ |
+| Homework 1 | Exercise 3.2 (Training free classification) |
+| Homework 2 | Exercise 3.3 (Text-To-Image-App [Try here](https://huggingface.co/spaces/Andy-6/Text-to-ImageApp)) |
+| Homework 3 | Exercise 3.3 (OpenaAi-car) |
 
 ---
 
 ## Setup
 
-Dependencies are managed with [uv](https://github.com/astral-sh/uv). Install it if you don't have it:
+Dependencies are managed independently within each homework using `uv`.
+
+Install `uv` if it is not already available:
 
 ```bash
 curl -Lsf https://astral.sh/uv/install.sh | sh
-
 ```
 
-Then install all dependencies and activate the environment:
+Then enter the desired homework folder and install its dependencies:
 
 ```bash
+cd <Lab_folder>
 uv sync
-```
-
----
-
-## Usage
-
-Run a lab's main script:
-
-```bash
-uv run python lab1/main.py
-```
-
-Open a lab's analysis notebook:
-
-```bash
-uv run jupyter notebook lab1/analysis.ipynb
 ```
