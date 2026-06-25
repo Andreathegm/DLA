@@ -45,15 +45,14 @@ def test_extract_features(model,dataloader,replace_head = False):
 
 
 def save_feats(model_name,batch_size=128,transform_string=None,features_path = "features"):
-    model_name = model_name
+    print(f"Start pipeline feature extraction for {model_name} ")
     model = get_model(model_name, weights='DEFAULT')
     dl_train = get_train_GTSRB_dl("dataset/",batch_size=batch_size,transform_string=transform_string)
     dl_test = get_test_GTSRB_dl("dataset/",batch_size=batch_size,transform_string=transform_string)
-    print(f"Info about train dataloader : \n{dl_train}\n")
-    print(f"Info about test dataloader : \n{dl_test}\n")
+    
+    if str(dl_train.dataset.transform) != str(dl_test.dataset.transform) :
+        raise ValueError(f"train transform =  {dl_train.dataset.transform} is different than test transform = {dl_test.dataset.transform}")
 
-    print(f"Info about train dataloader.dataset : \n{dl_train.dataset}\n")
-    print(f"Info about test dataloader.dataset : \n{dl_test.dataset}\n")
 
 
         

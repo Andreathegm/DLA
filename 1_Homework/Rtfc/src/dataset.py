@@ -1,5 +1,6 @@
 from torchvision.datasets import GTSRB
 from torch.utils.data import DataLoader
+import torch
 import os
 import torchvision.transforms.v2 as T
 
@@ -63,7 +64,25 @@ def get_transform(trasform_str):
                 T.ToTensor(),
                 T.Normalize(mean=mean, std=std)
             ])
-            
+        
+        case "eff":
+            # return T.Compose([
+            #     T.Resize(256),
+            #     T.CenterCrop(224),
+            #     T.ToImage(),
+            #     T.ToDtype(torch.float32, scale=True),
+            #     T.Normalize(mean=[0.485, 0.456, 0.406],
+            #                 std=[0.229, 0.224, 0.225])
+            # ])
+            return T.Compose([
+                T.Resize(70), 
+                T.RandomCrop((64, 64)), 
+                T.Resize((224, 224), 
+                interpolation=T.InterpolationMode.BILINEAR), 
+                T.ToImage(), 
+                T.ToDtype(torch.float32, scale=True), 
+                T.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])])
+      
         case _:
             return T.Compose([
                 T.Resize(70),

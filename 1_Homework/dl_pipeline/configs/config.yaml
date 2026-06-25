@@ -11,7 +11,7 @@ defaults:
   - _self_          # values in THIS file take precedence over sub-configs
 
 trainer:
-  epochs: 40
+  epochs: 10
   device: cuda               # falls back to cpu automatically in CustomTrainer
   log_every_n_steps: 50
   checkpoint_dir: checkpoints
