@@ -4,7 +4,7 @@ import numpy as np
 import os
 
 def load_results(results_dir="results", classify_dir="classify"):
-    """Carica tutti i .pt da results/ e classify/ e li unisce per modello."""
+    """Load all .pt from results/ and from classify/ and it merge them by model"""
     data = {}
     
     for f in sorted(os.listdir(results_dir)):
@@ -22,7 +22,7 @@ def load_results(results_dir="results", classify_dir="classify"):
 
 
 def plot_map_comparison(data: dict, save_path="plots/map_comparison.png"):
-    """Barchart mAP per modello."""
+    """Barchart mAP per model."""
     os.makedirs("plots", exist_ok=True)
     
     models = list(data.keys())
@@ -144,5 +144,4 @@ def plot_all(results_dir="results", classify_dir="classify"):
             plot_per_class_accuracy(data, model_name)
 
 
-plot_all()
 

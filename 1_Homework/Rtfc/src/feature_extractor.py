@@ -4,7 +4,7 @@ from torch.utils.data import DataLoader
 from torchvision.models import get_model
 from tqdm import tqdm
 from .utils import get_device
-from src.dataset import get_train_GTSRB_dl,get_test_GTSRB_dl
+from .dataset import get_train_GTSRB_dl,get_test_GTSRB_dl
 import os
 
 def extract_features(model: nn.Module, dataloader: DataLoader,replace_head=False,device=None):
@@ -33,8 +33,8 @@ def extract_features(model: nn.Module, dataloader: DataLoader,replace_head=False
             classes.append(cls)
 
     # 5. Concatena tutto
-    feats = torch.vstack(feats)
-    classes = torch.cat(classes)
+    feats = torch.vstack(feats) ## (N,D)
+    classes = torch.cat(classes) ## (N,)
 
     return feats, classes
 
@@ -44,20 +44,26 @@ def test_extract_features(model,dataloader,replace_head = False):
     return features,labels
 
 
-def save_feats(model_name,batch_size=128,transform_string=None):
+def save_feats(model_name,batch_size=128,transform_string=None,features_path = "features"):
     model_name = model_name
     model = get_model(model_name, weights='DEFAULT')
     dl_train = get_train_GTSRB_dl("dataset/",batch_size=batch_size,transform_string=transform_string)
     dl_test = get_test_GTSRB_dl("dataset/",batch_size=batch_size,transform_string=transform_string)
-    print(f"Info about train dataloader : \n{dl_train}")
-    print(f"Info about test dataloader : \n{dl_test}")
+    print(f"Info about train dataloader : \n{dl_train}\n")
+    print(f"Info about test dataloader : \n{dl_test}\n")
 
+    print(f"Info about train dataloader.dataset : \n{dl_train.dataset}\n")
+    print(f"Info about test dataloader.dataset : \n{dl_test.dataset}\n")
+
+
+        
     train_features,train_labels = test_extract_features(model,dl_train,replace_head = True)
     test_features,test_labels = test_extract_features(model,dl_test)
     
-    os.makedirs("models", exist_ok=True)
-    torch.save([train_features,train_labels],f"models/{model_name}_gallery_feats.pt")
-    torch.save([test_features,test_labels],f"models/{model_name}_test_feats.pt")
+    os.makedirs(features_path, exist_ok=True)
+    torch.save([train_features,train_labels],f"{features_path}/{model_name}_gallery_feats.pt")
+    torch.save([test_features,test_labels],f"{features_path}/{model_name}_test_feats.pt")
+    return (train_features,train_labels),(test_features,test_labels)
 
 
 def classifier_takeout(model):

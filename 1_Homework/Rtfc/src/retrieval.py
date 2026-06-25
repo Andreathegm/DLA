@@ -55,18 +55,27 @@ from tqdm import tqdm
 from .utils import get_device
 
 def compute_similarity_batch(test_batch, gallery_norm):
+    ### test_batch.shape = (B,feature_dim) , gallery_norm = (N,feature_dim)
     return test_batch @ gallery_norm.T
+    ### (B * N ) so every row contains the similarity beteween the single test image
+    # and all gallery(train image)  
 
 
 def compute_ranking_batch(sim_batch):
     return torch.argsort(sim_batch, dim=1, descending=True)
 
+    ##[ 1, 3 , 4 ]     [2 , 1 , 0 ]
+    # [ 5 ,8 , 7 ]     [2, 0 , 1  ]     
+    #
+
 
 def average_precision_single(ranking, gallery_labels, true_label):
     class_bitmap = (gallery_labels[ranking] == true_label).float()
+    # class_bitmap[k] = 1 if k-th image in the ranking is labeled right.
     cumulative_sum = torch.cumsum(class_bitmap, dim=0)
     n_up_to_k = torch.arange(1, len(cumulative_sum) + 1, device=ranking.device)
-    precision_at_k = cumulative_sum / n_up_to_k
+    precision_at_k = cumulative_sum / n_up_to_k  ## it indicates how well I am precise
+    ## I chose 5 person that are sopposed to be plumbers how many of them are actually plumbers given I am a plumber(true label coming from test).
 
     if class_bitmap.sum() == 0:
         return 0.0
